@@ -38,7 +38,6 @@ build_image:stable:
     - echo "No build image commands!!!"
   only:
     - master
-Trigger CI
 
 build_image:latest:
   stage: image
@@ -48,3 +47,5 @@ build_image:latest:
   script:
     - echo "No build image commands!!!"
   when: manual
+
+Trigger CI:
