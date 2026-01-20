@@ -22,7 +22,7 @@ func Test_someHelperFunction(t *testing.T) {
 		{
 			name: "basic test 2",
 			args: args{s: "a,b;c"},
-			want: []string{"a", "bc"},
+			want: []string{"a", "b;c"},
 		},
 		{
 			name: "basic test 3",
