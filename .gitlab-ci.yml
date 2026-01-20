@@ -48,4 +48,4 @@ build_image:latest:
     - echo "No build image commands!!!"
   when: manual
 
-Trigger CI:
+# Trigger CI
