@@ -1,5 +1,4 @@
 stages:
-  - build
   - test
   - image
 
@@ -8,26 +7,11 @@ variables:
   PUBLIC_REGISTRY_OWNER: maxdudenko
   PUBLIC_REGISTRY_APP_NAME: module-39
 
-build_app:
-  stage: build
-  image: golang:1.15
-  script:
-    - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./${PUBLIC_REGISTRY_APP_NAME} ./
-
 test:
   stage: test
   image: golang:1.15
   script:
     - go test ./...
-
-lint:
-  stage: test
-  image: golang:1.15
-  script:
-    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.41.1
-    - golangci-lint --version
-    - golangci-lint run
-  allow_failure: true
 
 build_image:stable:
   stage: image
@@ -35,9 +19,11 @@ build_image:stable:
   services:
     - docker:dind
   script:
-    - echo "No build image commands!!!"
+    - docker login -u $PUBLIC_REGISTRY_OWNER -p $PUBLIC_REGISTRY_PASSWORD $PUBLIC_REGISTRY_HOST
+    - docker build -t $PUBLIC_REGISTRY_HOST/$PUBLIC_REGISTRY_OWNER/$PUBLIC_REGISTRY_APP_NAME:$CI_COMMIT_REF_NAME ./
+    - docker push $PUBLIC_REGISTRY_HOST/$PUBLIC_REGISTRY_OWNER/$PUBLIC_REGISTRY_APP_NAME:$CI_COMMIT_REF_NAME
   only:
-    - master
+    - main
 
 build_image:latest:
   stage: image
@@ -45,7 +31,7 @@ build_image:latest:
   services:
     - docker:dind
   script:
-    - echo "No build image commands!!!"
+    - docker login -u $PUBLIC_REGISTRY_OWNER -p $PUBLIC_REGISTRY_PASSWORD $PUBLIC_REGISTRY_HOST
+    - docker build -t $PUBLIC_REGISTRY_HOST/$PUBLIC_REGISTRY_OWNER/$PUBLIC_REGISTRY_APP_NAME:latest ./
+    - docker push $PUBLIC_REGISTRY_HOST/$PUBLIC_REGISTRY_OWNER/$PUBLIC_REGISTRY_APP_NAME:latest
   when: manual
-
-# Trigger CI
